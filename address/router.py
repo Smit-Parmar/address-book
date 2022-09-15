@@ -48,3 +48,6 @@ def get_perticuler_blog(id,db: Session = Depends(get_db)):
     if not blog:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"blog not found")
     return blog
+
+#https://kanoki.org/2019/02/14/how-to-find-distance-between-two-points-based-on-latitude-and-longitude-using-python-and-sql/
+#https://www.geeksforgeeks.org/sqlalchemy-orm-conversion-to-pandas-dataframe/
