@@ -11,5 +11,6 @@ class User(BaseModel):
 class ShowUser(BaseModel): #Response model
     name : str
     email : str
+    id: int
     class Config():
         orm_mode=True
