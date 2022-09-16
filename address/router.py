@@ -15,6 +15,14 @@ router = APIRouter(
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: schema.Address,db: Session = Depends(get_db)):
+    '''
+    user will add address along with latitude and longitude coordinates
+    '''
+    user=db.query(models.User).filter(models.User.id == request.user).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User with id {request.user} not found")
+
     new_address = models.Address(address_detail=request.address_detail, lat=request.lat,long=request.long,user_id=request.user)
     db.add(new_address)
     db.commit()
