@@ -12,8 +12,6 @@ router= APIRouter(
     tags=['User']
 )
 
-####################################### User ##################################
-
 @router.post('/',status_code=201,response_model=schema.ShowUser)
 def create(request:schema.User , db: Session = Depends(get_db)):
 
