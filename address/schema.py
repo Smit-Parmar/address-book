@@ -19,13 +19,7 @@ class ShowAddress(BaseModel):
     address_detail: str
     lat: float
     long: float
-    user: ShowUser
     id: int
 
     class Config():
         orm_mode = True
-
-class AddressGet(BaseModel):
-    distance: int
-    lat: float
-    long: float
