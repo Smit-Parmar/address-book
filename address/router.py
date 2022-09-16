@@ -15,6 +15,14 @@ router = APIRouter(
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: schema.Address,db: Session = Depends(get_db)):
+    '''
+    user will add address along with latitude and longitude coordinates
+    '''
+    user=db.query(models.User).filter(models.User.id == request.user).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User with id {request.user} not found")
+
     new_address = models.Address(address_detail=request.address_detail, lat=request.lat,long=request.long,user_id=request.user)
     db.add(new_address)
     db.commit()
@@ -31,7 +39,7 @@ def destroy(id:int,db: Session = Depends(get_db)):
 
     address.delete(synchronize_session=False)
     db.commit()
-    return 'done'
+    return 'deleted'
 
 @router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id:int,request:schema.Address, db:Session = Depends(get_db)):
@@ -54,6 +62,3 @@ def get_address_by_range(user_id,lat:float,long:float,distance:int,db: Session =
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"No address found")
 
     return address
-
-#https://kanoki.org/2019/02/14/how-to-find-distance-between-two-points-based-on-latitude-and-longitude-using-python-and-sql/
-#https://www.geeksforgeeks.org/sqlalchemy-orm-conversion-to-pandas-dataframe/
