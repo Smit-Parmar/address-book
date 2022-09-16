@@ -62,6 +62,3 @@ def get_address_by_range(user_id,lat:float,long:float,distance:int,db: Session =
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"No address found")
 
     return address
-
-#https://kanoki.org/2019/02/14/how-to-find-distance-between-two-points-based-on-latitude-and-longitude-using-python-and-sql/
-#https://www.geeksforgeeks.org/sqlalchemy-orm-conversion-to-pandas-dataframe/
