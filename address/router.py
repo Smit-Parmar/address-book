@@ -5,21 +5,7 @@ from sqlalchemy.orm import Session
 from database import get_db,engine
 import pandas as pd
 from typing import List
-
-from math import radians, cos, sin, asin, sqrt
-def haversine(lon1, lat1, lon2, lat2):
-  print(lon1, lat1, lon2, lat2,end=" ")
-  # convert decimal degrees to radians
-  lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-
-  # haversine formula
-  dlon = lon2 - lon1
-  dlat = lat2 - lat1
-  a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-  c = 2 * asin(sqrt(a))
-  r = 6371 # Radius of earth in kilometers. Use 3956 for miles
-  print(c*r)
-  return c * r
+from .formula import haversine,get_dataframe
 
 
 router = APIRouter(
@@ -62,18 +48,7 @@ def update(id:int,request:schema.Address, db:Session = Depends(get_db)):
 @router.get('/{user_id}',status_code=status.HTTP_200_OK,response_model=List[schema.ShowAddress])
 def get_address_by_range(user_id,lat:float,long:float,distance:int,db: Session = Depends(get_db)):
     address = db.query(models.Address).join(models.User).filter(models.User.id == user_id)
-    df = pd.read_sql_query(
-    sql = address.statement,
-    con = engine
-    )
-    
-    current_lat_long=(long,lat)
-    def row_hsign(row):
-        return haversine(*current_lat_long,row['long'],row['lat'])
-
-    df["distance"]=df.apply(row_hsign,axis=1)
-    df=df.loc[df['distance'] <distance]
-    address_ids = df["id"].tolist()
+    address_ids=get_dataframe(address,long,lat,distance)
     address = db.query(models.Address).filter(models.Address.id.in_ (address_ids)).all()
     if not address:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"No address found")
