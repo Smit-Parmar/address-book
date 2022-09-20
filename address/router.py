@@ -56,9 +56,11 @@ def update(id:int,request:schema.Address, db:Session = Depends(get_db)):
 @router.get('/{user_id}',status_code=status.HTTP_200_OK,response_model=List[schema.ShowAddress])
 def get_address_by_range(user_id,lat:float,long:float,distance:int,db: Session = Depends(get_db)):
     address = db.query(models.Address).join(models.User).filter(models.User.id == user_id)
+    if not address.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"No address found")
+
     address_ids=get_dataframe(address,long,lat,distance)
     address = db.query(models.Address).filter(models.Address.id.in_ (address_ids)).all()
-    if not address:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"No address found")
+    
 
     return address
